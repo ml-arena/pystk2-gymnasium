@@ -28,9 +28,13 @@ Each controlled kart is parametrized by `pystk2_gymnasium.AgentSpec`:
   on) or `OFF` (no camera).
 
 
-## Current limitations
+## Render Modes
 
--  no graphics information is available (i.e. pixmap)
+The environment supports two render modes:
+- `human`: Display the game window for human viewing (default)
+- `rgb_array`: Capture RGB frames as numpy arrays (screen_height x screen_width x 3) for visual observations or recording
+
+When using `rgb_array` mode, call `env.render()` after each `env.step()` to get the current frame as a numpy array.
 
 
 ## Environments
@@ -43,7 +47,7 @@ After importing `pystk2_gymnasium`, the following environments are available:
   using `env.observation_space` and `env.action_space`. The following options
   can be used to modify the environment:
     - `agent` is an `AgentSpec (see above)`
-    - `render_mode` can be None or `human`
+    - `render_mode` can be None, `human`, or `rgb_array`
     - `track` defines the SuperTuxKart track to use (None for random). The full
       list can be found in `STKRaceEnv.TRACKS` after initialization with
       `initialize.initialize(with_graphics: bool)` has been called.

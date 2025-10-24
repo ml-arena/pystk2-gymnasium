@@ -146,7 +146,7 @@ def get_action(action: STKAction):
 
 
 class BaseSTKRaceEnv(gym.Env[Any, STKAction]):
-    metadata = {"render_modes": ["human"]}
+    metadata = {"render_modes": ["human", "rgb_array"]}
 
     #: List of available tracks
     TRACKS: ClassVar[List[str]] = []
@@ -189,7 +189,7 @@ class BaseSTKRaceEnv(gym.Env[Any, STKAction]):
 
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
-        self.initialize(render_mode == "human")
+        self.initialize(render_mode in ["human", "rgb_array"])
 
         # Setup the variables
         self.default_track = track
@@ -397,7 +397,8 @@ class BaseSTKRaceEnv(gym.Env[Any, STKAction]):
         }
 
     def render(self):
-        # Just do nothing... rendering is done directly
+        # Just do nothing for base class... rendering is done directly
+        # Subclasses should override this method to return RGB arrays
         pass
 
     def race_step(self, *action):
@@ -479,6 +480,14 @@ class STKRaceEnv(BaseSTKRaceEnv):
         obs, reward, terminated, info = self.get_state(self.kart_ix, self.agent.use_ai)
 
         return (obs, reward, terminated, False, info)
+
+    def render(self):
+        if self.render_mode == "rgb_array":
+            return self._process.get_render_data(self.kart_ix)
+        elif self.render_mode == "human":
+            # Rendering is done directly by pystk2
+            pass
+        return None
 
 
 class STKRaceMultiEnv(BaseSTKRaceEnv):
@@ -617,3 +626,15 @@ class STKRaceMultiEnv(BaseSTKRaceEnv):
                 "reward": rewards,
             },
         )
+
+    def render(self):
+        if self.render_mode == "rgb_array":
+            # Return a dictionary of RGB arrays for each agent
+            return {
+                str(agent_ix): self._process.get_render_data(kart_ix)
+                for agent_ix, kart_ix in enumerate(self.kart_indices)
+            }
+        elif self.render_mode == "human":
+            # Rendering is done directly by pystk2
+            pass
+        return None

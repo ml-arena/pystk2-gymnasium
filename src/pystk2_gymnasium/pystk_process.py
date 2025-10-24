@@ -92,6 +92,14 @@ class PySTKRemoteProcess:
             return Exception("Cannot step since race has not been started")
         return self.race.get_kart_action(kart_ix)
 
+    def get_render_data(self, kart_ix):
+        if self.race is None:
+            return Exception("Cannot get render data since race has not been started")
+        render_data = self.race.render_data
+        if render_data is None or kart_ix >= len(render_data):
+            return None
+        return render_data[kart_ix].image
+
 
 class PySTKProcess:
     COUNT = 0
