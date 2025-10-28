@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "pystk2-gymnasium"
-version = "0.7.6"
+version = "0.7.7"
 description = "Gymnasium wrapper for PySTK2 with bundled PySuperTuxKart2"
 readme = "README.md"
 authors = [
