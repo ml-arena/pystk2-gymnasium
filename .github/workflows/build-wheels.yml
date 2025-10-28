@@ -36,13 +36,25 @@ jobs:
             cmake \
             g++ \
             gcc \
+            build-essential \
             libsdl2-dev \
-            build-essential
+            libsdl2-2.0-0 \
+            pkg-config \
+            zlib1g-dev \
+            libpng-dev \
+            libjpeg-dev \
+            libfreetype6-dev
 
       - name: Install Python build tools
         run: |
           python -m pip install --upgrade pip
           pip install build wheel
+
+      - name: Verify SDL2 installation
+        run: |
+          pkg-config --modversion sdl2 || echo "SDL2 not found via pkg-config"
+          ldconfig -p | grep libSDL2 || echo "libSDL2 not found in ldconfig"
+          find /usr -name "SDL2Config.cmake" 2>/dev/null || echo "SDL2Config.cmake not found"
 
       - name: Checkout PySuperTuxKart2 dependency
         uses: actions/checkout@v4
@@ -54,6 +66,9 @@ jobs:
       - name: Build PySuperTuxKart2 wheel
         run: |
           cd pystk2-build
+          # Set CMAKE_PREFIX_PATH to help find SDL2
+          export CMAKE_PREFIX_PATH=/usr:$CMAKE_PREFIX_PATH
+          export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           python -m build --wheel
           echo "=== PySuperTuxKart2 wheel built ==="
           ls -lh dist/
