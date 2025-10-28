@@ -41,8 +41,14 @@ cmake.args = [
   "-DUSE_WIIUSE=off",
   "-DUSE_CRYPTO_OPENSSL=off",
   "-DUSE_SQLITE3=off",
-  "-DNO_SHADERC=on"
+  "-DNO_SHADERC=on",
+  "-DCMAKE_BUILD_TYPE=Release",
+  # Optimize for faster builds in CI
+  "-DCMAKE_CXX_FLAGS=-O2 -pipe",
+  "-DCMAKE_C_FLAGS=-O2 -pipe"
 ]
 wheel.packages = ["src/pystk2_gymnasium"]
 # Install the compiled pystk2 module into the wheel
 install.components = ["Python"]
+# Use ninja for faster builds if available
+ninja.make-fallback = true
