@@ -43,7 +43,8 @@ jobs:
             zlib1g-dev \
             libpng-dev \
             libjpeg-dev \
-            libfreetype6-dev
+            libfreetype6-dev \
+            libharfbuzz-dev
 
       - name: Install Python build tools
         run: |
