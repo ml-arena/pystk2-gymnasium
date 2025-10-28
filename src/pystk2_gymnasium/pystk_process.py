@@ -98,10 +98,10 @@ class PySTKRemoteProcess:
         render_data = self.race.render_data
         if render_data is None or kart_ix >= len(render_data):
             return None
-        # Convert memoryview to numpy array for proper serialization
+        # Convert to numpy array and make a copy for proper serialization across processes
         import numpy as np
         image = render_data[kart_ix].image
-        return np.asarray(image, dtype=np.uint8)
+        return np.array(image, dtype=np.uint8, copy=True)
 
 
 class PySTKProcess:
