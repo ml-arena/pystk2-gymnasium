@@ -1,27 +1,47 @@
-[tool.poetry]
-name = "pystk2-gymnasium"
-version = "0.0.0"
-description = "Gymnasium wrapper for PySTK2"
-authors = ["Benjamin Piwowarski <benjamin@piwowarski.fr>"]
-license = "GPL"
-readme = "README.md"
-homepage = "https://github.com/bpiwowar/pystk2-gymnasium"
-repository = "https://github.com/bpiwowar/pystk2-gymnasium"
-
-include = ["CHANGELOG.md"]
-
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["scikit-build-core>=0.3.3", "pybind11"]
+build-backend = "scikit_build_core.build"
 
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
-dirty = true
-format-jinja = "{% if distance == 0 %}{{ base }}{% else %}{{ base }}+{{ distance }}.{{ commit }}{% if dirty %}.dirty{% endif %}{% endif %}"
+[project]
+name = "pystk2-gymnasium"
+version = "0.7.6"
+description = "Gymnasium wrapper for PySTK2 with bundled PySuperTuxKart2"
+readme = "README.md"
+authors = [
+  { name = "Benjamin Piwowarski", email = "benjamin@piwowarski.fr" },
+]
+license = { text = "GPL" }
+requires-python = ">=3.8"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-PySuperTuxKart2 = {git = "https://github.com/ml-arena/pystk2.git", rev = "257c2107f"}
-gymnasium = ">0.29.0"
+dependencies = [
+  "gymnasium>=0.29.0",
+  "numpy",
+  "platformdirs",
+  "requests"
+]
+
+[project.urls]
+homepage = "https://github.com/ml-arena/pystk2-gymnasium"
+repository = "https://github.com/ml-arena/pystk2-gymnasium"
+
+[tool.scikit-build]
+cmake.source-dir = "pystk2_build"
+cmake.args = [
+  "-DBUILD_RECORDER=0",
+  "-DCHECK_ASSETS=off",
+  "-DUSE_WIIUSE=off",
+  "-DUSE_CRYPTO_OPENSSL=off",
+  "-DUSE_SQLITE3=off",
+  "-DNO_SHADERC=on"
+]
+wheel.packages = ["src/pystk2_gymnasium"]

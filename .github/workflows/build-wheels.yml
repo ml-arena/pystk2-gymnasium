@@ -50,7 +50,7 @@ jobs:
       - name: Install Python build tools
         run: |
           python -m pip install --upgrade pip
-          pip install build wheel poetry-core poetry-dynamic-versioning twine
+          pip install build wheel twine scikit-build-core pybind11
 
       - name: Verify SDL2 installation
         run: |
@@ -63,17 +63,18 @@ jobs:
           echo "CMAKE_PREFIX_PATH=/usr:$CMAKE_PREFIX_PATH" >> $GITHUB_ENV
           echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig" >> $GITHUB_ENV
 
-      - name: Build pystk2-gymnasium wheel
+      - name: Build unified pystk2-gymnasium wheel (includes PySuperTuxKart2)
         run: |
           python -m build --wheel
-          echo "=== pystk2-gymnasium wheel built ==="
+          echo "=== pystk2-gymnasium wheel built (with bundled pystk2) ==="
           ls -lh dist/
 
-      - name: Test wheel installation
+      - name: Test unified wheel installation
         run: |
           pip install dist/*.whl
-          python -c "import pystk2_gymnasium; print(f'pystk2-gymnasium version: {pystk2_gymnasium.__version__}')"
           python -c "import pystk2; print('PySuperTuxKart2 imported successfully')"
+          python -c "import pystk2_gymnasium; print(f'pystk2-gymnasium version: {pystk2_gymnasium.__version__}')"
+          python -c "import pystk2; import pystk2_gymnasium; print('Both modules work correctly!')"
 
       - name: Upload wheels as artifacts
         uses: actions/upload-artifact@v4
@@ -89,14 +90,3 @@ jobs:
           files: dist/*.whl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to GitHub Packages
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-          TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
-        run: |
-          # For GitHub Packages, use organization scope
-          # python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.whl
-          echo "Wheel published to GitHub Release. Configure PyPI token for full PyPI publishing."
