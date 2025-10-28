@@ -12,10 +12,12 @@ jobs:
   build-wheels:
     name: Build wheels for Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    # Use Debian container to match python:3.10-slim production environment
+    container:
+      image: python:${{ matrix.python-version }}-slim
     timeout-minutes: 90
     env:
       DEBIAN_FRONTEND: noninteractive
-      NEEDRESTART_MODE: a
       # Use all available CPU cores for faster compilation
       CMAKE_BUILD_PARALLEL_LEVEL: 4
     strategy:
@@ -27,15 +29,11 @@ jobs:
       - name: Checkout pystk2-gymnasium
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install system dependencies for PySuperTuxKart2
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            git \
             cmake \
             ninja-build \
             ccache \
@@ -52,22 +50,16 @@ jobs:
             libharfbuzz-dev \
             libcurl4-openssl-dev
 
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}-${{ matrix.python-version }}
-          max-size: 2G
+      - name: Setup ccache directory
+        run: |
+          mkdir -p /root/.ccache
+          ccache --max-size=2G
+          ccache --zero-stats
 
       - name: Install Python build tools
         run: |
           python -m pip install --upgrade pip
-          pip install build wheel twine scikit-build-core pybind11 ninja
-
-      - name: Verify SDL2 installation
-        run: |
-          pkg-config --modversion sdl2 || echo "SDL2 not found via pkg-config"
-          ldconfig -p | grep libSDL2 || echo "libSDL2 not found in ldconfig"
-          find /usr -name "SDL2Config.cmake" 2>/dev/null || echo "SDL2Config.cmake not found"
+          pip install build wheel scikit-build-core pybind11 ninja
 
       - name: Set CMake environment for SDL2 and ccache
         run: |
