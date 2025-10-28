@@ -47,8 +47,11 @@ cmake.args = [
   "-DCMAKE_CXX_FLAGS=-O2 -pipe",
   "-DCMAKE_C_FLAGS=-O2 -pipe"
 ]
+# Include both Python packages from src/ and CMake install() targets
+# The pystk2 module will be installed at wheel root via CMake install()
+# The pystk2_gymnasium package will be included from src/
 wheel.packages = ["src/pystk2_gymnasium"]
-# Install the compiled pystk2 module into the wheel
-install.components = ["Python"]
+# Don't strip symbols for debugging if needed
+install.strip = false
 # Use ninja for faster builds if available
 ninja.make-fallback = true
