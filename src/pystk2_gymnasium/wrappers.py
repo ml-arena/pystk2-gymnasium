@@ -116,6 +116,10 @@ class FlattenerWrapper(ActionObservationWrapper):
             self.observation_space = copy(env.observation_space)
             self.observation_space["action"] = self.action_flattener.space
 
+    def render(self):
+        """Pass through render to the wrapped environment."""
+        return self.env.render()
+
     def observation(self, observation):
         if self.flatten_observations:
             new_obs = {

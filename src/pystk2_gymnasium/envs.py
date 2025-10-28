@@ -224,6 +224,9 @@ class BaseSTKRaceEnv(gym.Env[Any, STKAction]):
             track=self.current_track,
             laps=self.laps,
         )
+        # Enable render data capture if using rgb_array render mode
+        if self.render_mode == "rgb_array":
+            self.config.num_cameras = self.num_kart
 
         for ix in range(self.num_kart):
             if ix > 0:

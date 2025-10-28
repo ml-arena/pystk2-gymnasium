@@ -32,6 +32,10 @@ class PolarObservations(gym.ObservationWrapper):
     def __init__(self, env: gym.Env, **kwargs):
         super().__init__(env, **kwargs)
 
+    def render(self):
+        """Pass through render to the wrapped environment."""
+        return self.env.render()
+
     def observation(self, obs):
         # Shallow copy
         obs = {**obs}
@@ -118,6 +122,10 @@ class ConstantSizedObservations(gym.ObservationWrapper):
             space["karts_mask"] = spaces.Box(
                 0, 1, shape=(self.state_karts,), dtype=np.int8
             )
+
+    def render(self):
+        """Pass through render to the wrapped environment."""
+        return self.env.render()
 
     def make_tensor(self, state, name: str, default_value=0):
         value = state[name]
