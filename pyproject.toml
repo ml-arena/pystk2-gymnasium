@@ -35,7 +35,6 @@ homepage = "https://github.com/ml-arena/pystk2-gymnasium"
 repository = "https://github.com/ml-arena/pystk2-gymnasium"
 
 [tool.scikit-build]
-cmake.source-dir = "pystk2_build"
 cmake.args = [
   "-DBUILD_RECORDER=0",
   "-DCHECK_ASSETS=off",
@@ -45,3 +44,5 @@ cmake.args = [
   "-DNO_SHADERC=on"
 ]
 wheel.packages = ["src/pystk2_gymnasium"]
+# Install the compiled pystk2 module into the wheel
+install.components = ["Python"]
